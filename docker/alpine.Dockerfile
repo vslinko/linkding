@@ -1,4 +1,4 @@
-FROM node:18-alpine AS node-build
+FROM docker-proxy.vslinko.xyz/node:18.20.2-alpine3.19 AS node-build
 WORKDIR /etc/linkding
 # install build dependencies
 COPY rollup.config.mjs postcss.config.js package.json package-lock.json ./
@@ -10,7 +10,7 @@ COPY bookmarks/styles ./bookmarks/styles
 RUN npm run build
 
 
-FROM python:3.12.8-alpine3.21 AS build-deps
+FROM docker-proxy.vslinko.xyz/python:3.12.8-alpine3.21 AS build-deps
 # Add required packages
 # alpine-sdk linux-headers pkgconfig: build Python packages from source
 # libpq-dev: build Postgres client from source
@@ -49,14 +49,14 @@ RUN wget https://www.sqlite.org/${SQLITE_RELEASE_YEAR}/sqlite-amalgamation-${SQL
     gcc -fPIC -shared icu.c `pkg-config --libs --cflags icu-uc icu-io` -o libicu.so
 
 
-FROM python:3.12.8-alpine3.21 AS linkding
+FROM docker-proxy.vslinko.xyz/python:3.12.8-alpine3.21 AS linkding
 LABEL org.opencontainers.image.source="https://github.com/sissbruecker/linkding"
 # install runtime dependencies
 RUN apk update && apk add bash curl icu libpq mailcap libssl3
 # create www-data user and group
 RUN set -x ; \
-  addgroup -g 82 -S www-data ; \
-  adduser -u 82 -D -S -G www-data www-data && exit 0 ; exit 1
+    addgroup -g 82 -S www-data ; \
+    adduser -u 82 -D -S -G www-data www-data && exit 0 ; exit 1
 WORKDIR /etc/linkding
 # copy python dependencies
 COPY --from=build-deps /opt/venv /opt/venv
@@ -80,12 +80,12 @@ RUN chmod g+w . && \
     chmod +x ./bootstrap.sh
 
 HEALTHCHECK --interval=30s --retries=3 --timeout=1s \
-CMD curl -f http://localhost:${LD_SERVER_PORT:-9090}/${LD_CONTEXT_PATH}health || exit 1
+    CMD curl -f http://localhost:${LD_SERVER_PORT:-9090}/${LD_CONTEXT_PATH}health || exit 1
 
 CMD ["./bootstrap.sh"]
 
 
-FROM node:18-alpine AS ublock-build
+FROM docker-proxy.vslinko.xyz/node:18.20.2-alpine3.19 AS ublock-build
 WORKDIR /etc/linkding
 # Install necessary tools
 # Download and unzip the latest uBlock Origin Lite release
@@ -99,7 +99,7 @@ RUN apk add --no-cache curl jq unzip && \
     unzip uBOLite.zip -d uBOLite.chromium.mv3 && \
     rm uBOLite.zip && \
     jq '.declarative_net_request.rule_resources |= map(if .id == "annoyances-overlays" or .id == "annoyances-cookies" or .id == "annoyances-social" or .id == "annoyances-widgets" or .id == "annoyances-others" then .enabled = true else . end)' \
-        uBOLite.chromium.mv3/manifest.json > temp.json && \
+    uBOLite.chromium.mv3/manifest.json > temp.json && \
     mv temp.json uBOLite.chromium.mv3/manifest.json && \
     sed -i 's/const out = \[ '\''default'\'' \];/const out = await dnr.getEnabledRulesets();/' uBOLite.chromium.mv3/js/ruleset-manager.js
 
