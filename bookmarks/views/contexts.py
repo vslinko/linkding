@@ -138,6 +138,8 @@ class BookmarkItem:
         self.preview_image_file = bookmark.preview_image_file
         self.is_archived = bookmark.is_archived
         self.unread = bookmark.unread
+        self.pinned = bookmark.pinned
+        self.line_after = False
         self.owner = bookmark.owner
         self.details_url = context.details(bookmark.id)
 
@@ -192,6 +194,12 @@ class BookmarkListContext:
         self.is_empty = paginator.count == 0
         self.bookmarks_page = bookmarks_page
         self.bookmarks_total = paginator.count
+
+        not_pinned = [i for i, x in enumerate(self.items) if not x.pinned]
+        if len(not_pinned) > 0:
+            first_not_pinned = not_pinned[0]
+            if first_not_pinned > 0:
+                self.items[first_not_pinned - 1].line_after = True
 
         self.return_url = request_context.index()
         self.action_url = request_context.action()

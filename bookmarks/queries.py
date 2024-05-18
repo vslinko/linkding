@@ -86,6 +86,7 @@ def _base_bookmarks_query(
         query_set = query_set.filter(shared=False)
 
     # Sort
+    first_order_field = "-pinned"
     if (
         search.sort == BookmarkSearch.SORT_TITLE_ASC
         or search.sort == BookmarkSearch.SORT_TITLE_DESC
@@ -109,14 +110,14 @@ def _base_bookmarks_query(
             order_field = "effective_title"
 
         if search.sort == BookmarkSearch.SORT_TITLE_ASC:
-            query_set = query_set.order_by(order_field)
+            query_set = query_set.order_by(first_order_field, order_field)
         elif search.sort == BookmarkSearch.SORT_TITLE_DESC:
-            query_set = query_set.order_by(order_field).reverse()
+            query_set = query_set.order_by(first_order_field, "-" + order_field)
     elif search.sort == BookmarkSearch.SORT_ADDED_ASC:
-        query_set = query_set.order_by("date_added")
+        query_set = query_set.order_by(first_order_field, "date_added")
     else:
         # Sort by date added, descending by default
-        query_set = query_set.order_by("-date_added")
+        query_set = query_set.order_by(first_order_field, "-date_added")
 
     return query_set
 

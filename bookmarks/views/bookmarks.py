@@ -34,6 +34,8 @@ from bookmarks.services.bookmarks import (
     mark_bookmarks_as_unread,
     share_bookmarks,
     unshare_bookmarks,
+    pin_bookmarks,
+    unpin_bookmarks,
 )
 from bookmarks.utils import get_safe_return_url
 from bookmarks.views import contexts, partials, turbo
@@ -258,6 +260,26 @@ def unshare(request, bookmark_id: int):
     bookmark.save()
 
 
+def pin(request, bookmark_id: int):
+    try:
+        bookmark = Bookmark.objects.get(pk=bookmark_id, owner=request.user)
+    except Bookmark.DoesNotExist:
+        raise Http404("Bookmark does not exist")
+
+    bookmark.pinned = True
+    bookmark.save()
+
+
+def unpin(request, bookmark_id: int):
+    try:
+        bookmark = Bookmark.objects.get(pk=bookmark_id, owner=request.user)
+    except Bookmark.DoesNotExist:
+        raise Http404("Bookmark does not exist")
+
+    bookmark.pinned = False
+    bookmark.save()
+
+
 def mark_as_read(request, bookmark_id: int):
     try:
         bookmark = Bookmark.objects.get(pk=bookmark_id, owner=request.user)
@@ -371,6 +393,11 @@ def handle_action(request, query: QuerySet[Bookmark] = None):
     if "update_state" in request.POST:
         update_state(request, request.POST["update_state"])
 
+    if "pin" in request.POST:
+        pin(request, request.POST["pin"])
+    if "unpin" in request.POST:
+        unpin(request, request.POST["unpin"])
+
     # Bulk actions
     if "bulk_execute" in request.POST:
         if query is None:
@@ -406,6 +433,10 @@ def handle_action(request, query: QuerySet[Bookmark] = None):
             share_bookmarks(bookmark_ids, request.user)
         if "bulk_unshare" == bulk_action:
             unshare_bookmarks(bookmark_ids, request.user)
+        if "bulk_pin" == bulk_action:
+            pin_bookmarks(bookmark_ids, request.user)
+        if "bulk_unpin" == bulk_action:
+            unpin_bookmarks(bookmark_ids, request.user)
 
 
 @login_required
