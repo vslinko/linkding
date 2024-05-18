@@ -343,6 +343,8 @@ class BookmarkArchivedViewTestCase(TestCase, BookmarkFactoryMixin, HtmlTestMixin
             <option value="bulk_untag">Remove tags</option>
             <option value="bulk_read">Mark as read</option>
             <option value="bulk_unread">Mark as unread</option>
+            <option value="bulk_pin">Pin</option>
+            <option value="bulk_unpin">Unpin</option>
           </select>
         """,
             html,
@@ -366,6 +368,8 @@ class BookmarkArchivedViewTestCase(TestCase, BookmarkFactoryMixin, HtmlTestMixin
             <option value="bulk_untag">Remove tags</option>
             <option value="bulk_read">Mark as read</option>
             <option value="bulk_unread">Mark as unread</option>
+            <option value="bulk_pin">Pin</option>
+            <option value="bulk_unpin">Unpin</option>
             <option value="bulk_share">Share</option>
             <option value="bulk_unshare">Unshare</option>
           </select>

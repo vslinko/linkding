@@ -63,6 +63,7 @@ class Bookmark(models.Model):
     unread = models.BooleanField(default=False)
     is_archived = models.BooleanField(default=False)
     shared = models.BooleanField(default=False)
+    pinned = models.BooleanField(default=False)
     date_added = models.DateTimeField()
     date_modified = models.DateTimeField()
     date_accessed = models.DateTimeField(blank=True, null=True)
@@ -177,6 +178,7 @@ class BookmarkSearch:
     SORT_ADDED_DESC = "added_desc"
     SORT_TITLE_ASC = "title_asc"
     SORT_TITLE_DESC = "title_desc"
+    SORT_RANDOM = "random"
 
     FILTER_SHARED_OFF = "off"
     FILTER_SHARED_SHARED = "yes"
@@ -266,6 +268,7 @@ class BookmarkSearchForm(forms.Form):
         (BookmarkSearch.SORT_ADDED_DESC, "Added ↓"),
         (BookmarkSearch.SORT_TITLE_ASC, "Title ↑"),
         (BookmarkSearch.SORT_TITLE_DESC, "Title ↓"),
+        (BookmarkSearch.SORT_RANDOM, "Random"),
     ]
     FILTER_SHARED_CHOICES = [
         (BookmarkSearch.FILTER_SHARED_OFF, "Off"),

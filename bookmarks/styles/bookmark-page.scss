@@ -267,6 +267,11 @@ li[ld-bookmark-item] {
   }
 }
 
+.bookmarks-divider {
+  border: 1px solid $border-color;
+  border-bottom: none;
+}
+
 .bookmark-pagination {
   margin-top: $unit-4;
 }
