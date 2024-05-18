@@ -187,6 +187,22 @@ def unshare_bookmarks(bookmark_ids: [Union[int, str]], current_user: User):
     )
 
 
+def pin_bookmarks(bookmark_ids: [Union[int, str]], current_user: User):
+    sanitized_bookmark_ids = _sanitize_id_list(bookmark_ids)
+
+    Bookmark.objects.filter(owner=current_user, id__in=sanitized_bookmark_ids).update(
+        pinned=True, date_modified=timezone.now()
+    )
+
+
+def unpin_bookmarks(bookmark_ids: [Union[int, str]], current_user: User):
+    sanitized_bookmark_ids = _sanitize_id_list(bookmark_ids)
+
+    Bookmark.objects.filter(owner=current_user, id__in=sanitized_bookmark_ids).update(
+        pinned=False, date_modified=timezone.now()
+    )
+
+
 def _generate_upload_asset_filename(asset: BookmarkAsset, filename: str):
     formatted_datetime = asset.date_created.strftime("%Y-%m-%d_%H%M%S")
     return f"{asset.asset_type}_{formatted_datetime}_{filename}"

@@ -86,6 +86,15 @@
               {# Bookmark owner actions #}
               {% if bookmark_list.show_edit_action %}
                 <a href="{% url 'bookmarks:edit' bookmark_item.id %}?return_url={{ bookmark_list.return_url|urlencode }}">Edit</a>
+                {% endif %}
+              {% if bookmark_item.pinned %}
+                <button type="submit" name="unpin" value="{{ bookmark_item.id }}"
+                      class="btn btn-link btn-sm">Unpin
+                </button>
+              {% else %}
+                <button type="submit" name="pin" value="{{ bookmark_item.id }}"
+                      class="btn btn-link btn-sm">Pin
+                </button>
               {% endif %}
               {% if bookmark_list.show_archive_action %}
                 {% if bookmark_item.is_archived %}
@@ -148,6 +157,9 @@
           <img class="preview-image" src="{% static bookmark_item.preview_image_file %}" loading="lazy"/>
         {% endif %}
       </li>
+      {% if bookmark_item.line_after %}
+      <li><hr class="bookmarks-divider" /></li>
+      {% endif %}
     {% endfor %}
   </ul>
 
