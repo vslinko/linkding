@@ -163,7 +163,9 @@
     {% endfor %}
   </ul>
 
+  {% if bookmark_list.pagination_enabled %}
   <div class="bookmark-pagination">
     {% pagination bookmark_list.bookmarks_page %}
   </div>
+  {% endif %}
 {% endif %}
