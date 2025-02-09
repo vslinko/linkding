@@ -182,7 +182,12 @@ class BookmarkListContext:
 
         query_set = request_context.get_bookmark_query_set(self.search)
         page_number = request.GET.get("page")
-        paginator = Paginator(query_set, user_profile.items_per_page)
+        self.pagination_enabled = True
+        page_size = user_profile.items_per_page
+        if self.search.sort == BookmarkSearch.SORT_RANDOM:
+            self.pagination_enabled = False
+            page_size = 1_000_000_000
+        paginator = Paginator(query_set, page_size)
         bookmarks_page = paginator.get_page(page_number)
         # Prefetch related objects, this avoids n+1 queries when accessing fields in templates
         models.prefetch_related_objects(bookmarks_page.object_list, "owner", "tags")

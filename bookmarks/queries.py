@@ -119,6 +119,9 @@ def _base_bookmarks_query(
         # Sort by date added, descending by default
         query_set = query_set.order_by(first_order_field, "-date_added")
 
+    if search.sort == BookmarkSearch.SORT_RANDOM:
+        query_set = query_set.order_by(first_order_field, "?")
+
     return query_set
 
 
